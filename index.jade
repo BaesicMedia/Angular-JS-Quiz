@@ -1,0 +1,190 @@
+//output:index.html
+
+doctype html
+html(lang='en', ng-app='turtleFacts')
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    title Turtle Facts and Quiz
+    // Bootstrap css and my own css
+    link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css', integrity='sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u', crossorigin='anonymous')
+    link(rel='stylesheet', href='stylesheets/app.css')
+      
+      
+  body
+      .container
+        .page-header
+          h1 Turtle Facts Quiz
+          h3
+            | Learn about all the turtles below before you decide to take on the
+            strong  TURTLE QUIZ
+        div(ng-controller='listCtrl as list', ng-hide="list.quizMetrics.quizActive || list.quizMetrics.resultsActive")
+          form.form-inline.well.well-sm.clearfix
+            span.glyphicon.glyphicon-search
+            input.form-control(type="text",placeholder="Search...", ng-model="list.search")
+            button.btn.btn-warning.pull-right(ng-click="list.activateQuiz()")
+              strong Start Quiz
+          .row
+            .col-sm-6(ng-repeat='turtle in list.data | filter:list.search')
+              .well.well-sm
+                .row
+                  .col-md-6
+                    img.img-rounded.img-responsive.well-image(ng-src='{{turtle.image_url}}')
+                  .col-md-6
+                    h4 {{turtle.type}}
+                    p
+                      strong Locations:
+                      | {{turtle.locations}}
+                    p
+                      strong Size:
+                      | {{turtle.size}}
+                    p
+                      strong Average Lifespan:
+                      | {{turtle.lifespan}}
+                    p
+                      strong Diet:
+                      | {{turtle.diet}}
+                    button.btn.btn-primary.pull-right(data-toggle='modal', data-target='#turtle-info', ng-click='list.changeActiveTurtle(turtle)') Learn More
+          #turtle-info.modal
+            .modal-dialog
+              .modal-content
+                .modal-header
+                  h2 {{list.activeTurtle.type}}
+                .modal-body
+                  .row
+                    .col-xs-8.col-xs-offset-2
+                      img.img-rounded.img-responsive(ng-src='{{list.activeTurtle.image_url}}')
+                  .row.top-buffer
+                    .col-md-6
+                      p
+                        strong Locations:
+                        | {{list.activeTurtle.locations}}
+                      p
+                        strong Size:
+                        | {{list.activeTurtle.size}}
+                      p
+                        strong Average Lifespan:
+                        | {{list.activeTurtle.lifespan}}
+                      p
+                        strong Diet:
+                        | {{list.activeTurtle.diet}}
+                    .col-xs-12.top-buffer
+                      p
+                        {{list.activeTurtle.description}}
+                      button.btn.btn-danger.pull-right(data-dismiss="modal") Close
+        // List Controller end 
+        // Quiz Controller
+        div(ng-controller='quizCtrl as quiz', ng-show='quiz.quizMetrics.quizActive')
+          .row
+            .col-xs-8
+              h2 Progress
+              .btn-toolbar
+                button.btn(ng-repeat="question in quiz.dataService.quizQuestions", ng-class="{'btn-info' : question.selected !== null, 'btn-danger' : question.selected === null }" ng-click="quiz.setActiveQuestion($index)")
+                  span.glyphicon(ng-class="{'glyphicon-pencil' : question.selected !== null, 'glyphicon-question-sign' : question.selected === null}")
+                  
+            //KEY LEGEND      
+            .col-xs-4
+              .row
+                h4 Legend:
+                .col-sm-4
+                  button.btn.btn-info
+                    span.glyphicon.glyphicon-pencil
+                  p Answered
+                .col-sm-4
+                  button.btn.btn-danger
+                    span.glyphicon.glyphicon-question-sign
+                  p Unanswered
+                      
+                      
+          .row
+            .alert.alert-danger(ng-show="quiz.error") Error! You have not answered all of the questions!
+              button.close(ng-click="quiz.error = false") &times
+            h3 Question:
+            .well.well-sm(ng-hide="quiz.finalize")
+              .row
+                .col-xs-12
+                  h4 {{quiz.activeQuestion+1 + ". " + quiz.dataService.quizQuestions[quiz.activeQuestion].text}}
+                  .row(ng-if="quiz.dataService.quizQuestions[quiz.activeQuestion].type === 'text' ")
+                    .col-sm-6(ng-repeat="answer in quiz.dataService.quizQuestions[quiz.activeQuestion].possibilities")
+                      h4.answer(ng-class="{'bg-info': $index === quiz.dataService.quizQuestions[quiz.activeQuestion].selected}" ng-click="quiz.selectAnswer($index)") {{answer.answer}}
+                      
+                  .row(ng-if="quiz.dataService.quizQuestions[quiz.activeQuestion].type === 'image' ")
+                    .col-sm-6(ng-repeat="answer in quiz.dataService.quizQuestions[quiz.activeQuestion].possibilities")
+                      .image-answer(ng-class="{'image-selected' : $index === quiz.dataService.quizQuestions[quiz.activeQuestion].selected}" ng-click="quiz.selectAnswer($index)")
+                        img(ng-src="{{answer.answer}}")
+                          
+              button.btn.btn-warning(ng-click="quiz.questionAnswered()") Continue
+          
+            .well.well-sm(ng-show="quiz.finalize")
+              .row
+                .col-xs-12
+                  h3 Are you sure you want to submit your answers?
+                  button.btn.btn-success(ng-click="quiz.finalizeAnswers()") Yes
+                  button.btn.btn-danger(ng-click="quiz.finalize = false") No
+
+        div(ng-controller='resultsCtrl as results', ng-show='results.quizMetrics.resultsActive')
+            .row
+              .col-xs-8
+                h2 Results:
+                .btn-toolbar
+                  button.btn(ng-repeat='question in results.dataService.quizQuestions', ng-class="{'btn-success': question.correct, 'btn-danger': !question.correct}", ng-click='results.setActiveQuestion($index)')
+                    span.glyphicon(ng-class="{'glyphicon-ok': question.correct, 'glyphicon-remove': !question.correct}")
+              .col-xs-4
+                .row
+                  h4 Legend:
+                  .col-sm-4
+                    button.btn.btn-success
+                      span.glyphicon.glyphicon-ok
+                    p Correct
+                  .col-sm-4
+                    button.btn.btn-danger
+                      span.glyphicon.glyphicon-remove
+                    p Incorrect
+            .row
+              .col-xs-12.top-buffer
+                // the score is displayed using simple angular expressions
+                h2
+                  | You Scored {{results.quizMetrics.numCorrect}} / {{results.dataService.quizQuestions.length}}
+                h2
+                  strong {{results.calculatePerc() | number:2}}%
+            .row
+              h3 Questions:
+              .well.well-sm
+                .row
+                  .col-xs-12
+                    h4
+                      | {{results.activeQuestion+1 +". "+results.dataService.quizQuestions[results.activeQuestion].text}}
+                    .row(ng-if="results.dataService.quizQuestions[results.activeQuestion].type === 'text'")
+                    
+                      .col-sm-6(ng-repeat='answer in results.dataService.quizQuestions[results.activeQuestion].possibilities')
+                        h4.answer(ng-class='results.getAnswerClass($index)')
+                          | {{answer.answer}}
+                          
+                          p.pull-right(ng-show='$index !== results.quizMetrics.correctAnswers[results.activeQuestion] && $index === results.dataService.quizQuestions[results.activeQuestion].selected') Your Answer
+                          p.pull-right(ng-show='$index === results.quizMetrics.correctAnswers[results.activeQuestion]') Correct Answer
+                 
+                    .row(ng-if="results.dataService.quizQuestions[results.activeQuestion].type === 'image'")
+                    
+                      .col-sm-6(ng-repeat='answer in results.dataService.quizQuestions[results.activeQuestion].possibilities')
+                      
+                        .image-answer(ng-class='results.getAnswerClass($index)')
+                          img(ng-src='{{answer.answer}}')
+              
+              button.btn.btn-primary.btn-lg(ng-click='results.reset()') Go Back To Facts
+
+        
+        
+        
+        
+        
+      script(src='https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0-rc.2/angular.min.js')
+      script(src='https://code.jquery.com/jquery-2.2.0.min.js')
+      script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js', integrity='sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS', crossorigin='anonymous')
+      // Our application scripts
+      script(src='javascript/app.js')
+      script(src='javascript/controllers/list.js')
+      script(src="javascript/controllers/quiz.js")
+      script(src="javascript/controllers/results.js")
+      script(src="javascript/factories/quizMetrics.js")
+      script(src="javascript/factories/dataService.js")
+        
