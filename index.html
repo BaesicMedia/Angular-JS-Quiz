@@ -14,6 +14,7 @@
         <h1>Turtle Facts Quiz</h1>
         <h3>Learn about all the turtles below before you decide to take on the<strong> TURTLE QUIZ</strong></h3>
       </div>
+      <!--BASE LIST CONTROLLER-->
       <div ng-controller="listCtrl as list" ng-hide="list.quizMetrics.quizActive || list.quizMetrics.resultsActive">
         <form class="form-inline well well-sm clearfix"><span class="glyphicon glyphicon-search"></span>
           <input type="text" placeholder="Search..." ng-model="list.search" class="form-control">
@@ -122,6 +123,7 @@
           </div>
         </div>
       </div>
+      <!--RESULTS CONTROLLER-->
       <div ng-controller="resultsCtrl as results" ng-show="results.quizMetrics.resultsActive">
         <div class="row">
           <div class="col-xs-8">
@@ -146,7 +148,6 @@
         </div>
         <div class="row">
           <div class="col-xs-12 top-buffer">
-            <!-- the score is displayed using simple angular expressions-->
             <h2>You Scored {{results.quizMetrics.numCorrect}} / {{results.dataService.quizQuestions.length}}</h2>
             <h2><strong>{{results.calculatePerc() | number:2}}%</strong></h2>
           </div>
@@ -180,7 +181,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0-rc.2/angular.min.js"></script>
     <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
-    <!-- Our application scripts-->
     <script src="javascript/app.js"></script>
     <script src="javascript/controllers/list.js"></script>
     <script src="javascript/controllers/quiz.js"></script>

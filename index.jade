@@ -1,5 +1,4 @@
 //output:index.html
-
 doctype html
 html(lang='en', ng-app='turtleFacts')
   head
@@ -18,6 +17,8 @@ html(lang='en', ng-app='turtleFacts')
           h3
             | Learn about all the turtles below before you decide to take on the
             strong  TURTLE QUIZ
+        
+        //BASE LIST CONTROLLER
         div(ng-controller='listCtrl as list', ng-hide="list.quizMetrics.quizActive || list.quizMetrics.resultsActive")
           form.form-inline.well.well-sm.clearfix
             span.glyphicon.glyphicon-search
@@ -121,7 +122,8 @@ html(lang='en', ng-app='turtleFacts')
                   h3 Are you sure you want to submit your answers?
                   button.btn.btn-success(ng-click="quiz.finalizeAnswers()") Yes
                   button.btn.btn-danger(ng-click="quiz.finalize = false") No
-
+                  
+        //RESULTS CONTROLLER
         div(ng-controller='resultsCtrl as results', ng-show='results.quizMetrics.resultsActive')
             .row
               .col-xs-8
@@ -142,7 +144,6 @@ html(lang='en', ng-app='turtleFacts')
                     p Incorrect
             .row
               .col-xs-12.top-buffer
-                // the score is displayed using simple angular expressions
                 h2
                   | You Scored {{results.quizMetrics.numCorrect}} / {{results.dataService.quizQuestions.length}}
                 h2
@@ -180,11 +181,10 @@ html(lang='en', ng-app='turtleFacts')
       script(src='https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0-rc.2/angular.min.js')
       script(src='https://code.jquery.com/jquery-2.2.0.min.js')
       script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js', integrity='sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS', crossorigin='anonymous')
-      // Our application scripts
+
       script(src='javascript/app.js')
       script(src='javascript/controllers/list.js')
       script(src="javascript/controllers/quiz.js")
       script(src="javascript/controllers/results.js")
       script(src="javascript/factories/quizMetrics.js")
       script(src="javascript/factories/dataService.js")
-        
